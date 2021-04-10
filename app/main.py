@@ -7,6 +7,7 @@ from aiogram import Bot, Dispatcher, types, executor, md
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart, CommandHelp
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher.filters import Text
 from states import HeadSearch
 from search_handlers import search_hh
 
@@ -43,24 +44,34 @@ async def cmd_version(message: types.Message):
         f"My Engine: {bot_version}")
 
 
-@dp.message_handler(commands=["hh_search"], state=None) # входной хендлер
+@dp.message_handler(state='*', commands=["cancel"])
+@dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
+async def cancel_handler(message: types.Message, state: FSMContext):
+    await state.finish()
+    await message.reply("Отменено", reply_markup=types.ReplyKeyboardRemove())
+
+
+@dp.message_handler(commands=["hh_search"], state=None)
 async def message_settings(message: types.Message):
-    # кнопка с поиском по предыдущей вакансии
-    await message.answer(
-        "Введите название вакансии"
-    )
+    search_history = ["first", "second", "third", "/cancel"]
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(*search_history)
     await HeadSearch.waiting_for_vacancy.set()
+    await message.answer(
+        "Введите название вакансии или выберите из истории поиска",
+        reply_markup=keyboard
+    )
 
 
 @dp.message_handler(state=HeadSearch.waiting_for_vacancy)
 async def hh_search(message: types.Message, state:FSMContext):
     search_for = message.text
     search_results = await search_hh(search_for)
-    # await state.update_data({"search": search_results})
     await message.answer(search_results)
-    # можете ввести новое название вакансии или перейти к другой команде
-    await state.finish()
-
+    await message.answer(
+        "Вы можете продолжить поиск по другой вакансии \n"
+        "Или отменить его через /cancel"
+    )
 
 @dp.message_handler(commands=["tg_search"])
 async def tg_search(message: types.Message):
