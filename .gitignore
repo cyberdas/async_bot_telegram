@@ -1,0 +1,7 @@
+Асинхронный.rtf
+venv/
+.env
+.vscode
+.pyc
+__pycache__
+*.py[cod]
