@@ -2,19 +2,7 @@ import asyncio
 import aiohttp
 from aiogram import md
 from aiocache import Cache, caches
-from databases import cache
-
-#caches.set_config({
-    #'default': {
-        #'cache': "aiocache.RedisCache",
-        ##'endpoint': "127.0.0.1",
-        #'port': 6379,
-        #'timeout': 1,
-        #'serializer': {
-        #    'class': "aiocache.serializers.JsonSerializer"
-       # },
-   ## }
-# })
+from databases.redis_cache import cache, cache_time
 
 
 URL = "https://api.hh.ru/vacancies"
@@ -30,7 +18,7 @@ async def search_hh(search_for):
                 for vacancy in vacancies:
                     search_results[vacancy.get("name")] = vacancy.get("alternate_url")
                 search_results_string = "\n".join(f'{k}: {v}' for k,v in search_results.items())
-                await cache.set(search_for, search_results_string, ttl=300)
+                await cache.set(search_for, search_results_string,ttl=cache_time)
                 return search_results_string
     else:
         return await cache.get(search_for)
