@@ -4,4 +4,7 @@ venv/
 .vscode
 .pyc
 __pycache__
+.mypy*
 *.py[cod]
+*.db
+

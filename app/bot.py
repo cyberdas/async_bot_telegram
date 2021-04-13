@@ -1,4 +1,7 @@
 import asyncio
+import os
+from aiocache import cached, Cache
+from aiocache.serializers import PickleSerializer
 from aiogram import __main__ as aiogram_core
 from aiogram import Bot, Dispatcher, types, executor, md
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -7,9 +10,9 @@ from aiogram.dispatcher.filters import CommandStart, CommandHelp, Text
 from collections import deque
 
 from config import BOT_TOKEN
+from databases import cache, cache_time
 from states import HeadSearch
-from search_handlers import search_hh
-from databases import user_db as db
+from handlers import search_hh, app, messages
 from keyboards import get_keyboard
 
 
@@ -35,14 +38,15 @@ async def message_help(message: types.Message):
     await message.reply(
         "Вот список моих комманд: \n"
         "Поиск вакансии на hh - /hh_search \n"
-        "Поиск вакансии в телеграм каналах - /tg_search \n"
+        "Поиск вакансии в телеграм каналах - /tg_search (вы получите файл с вакансиями) \n"
         "Версия бота /version \n"
     )
 
 @dp.message_handler(commands=["settings"])
 async def message_settings(message: types.Message):
     pass
-
+    # параметры для поиска?
+    # регион + 
 
 @dp.message_handler(commands=["version"])
 async def cmd_version(message: types.Message):
@@ -84,4 +88,10 @@ async def new_hh_search(message: types.Message, state:FSMContext):
 
 @dp.message_handler(commands=["tg_search"], state=None)
 async def tg_search(message: types.Message):
-    pass
+    loop = asyncio.get_running_loop()
+    await loop.create_task(messages.main())
+    document = types.InputFile("вакансии.txt")
+    await message.answer_document(document)
+    await message.answer(
+        "Python junior вакансии в телеграм каналах"
+    )

@@ -2,7 +2,7 @@ import asyncio
 import aiohttp
 from aiogram import md
 from aiocache import Cache, caches
-from databases.redis_cache import cache, cache_time
+from databases import cache, cache_time
 
 
 URL = "https://api.hh.ru/vacancies"
@@ -22,7 +22,3 @@ async def search_hh(search_for):
                 return search_results_string
     else:
         return await cache.get(search_for)
-
-
-async def search_tg():
-    pass

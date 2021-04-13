@@ -39,26 +39,26 @@ class AsyncDataBase:
             cursor = db.execute(sql)
             print(cursor.fetchall())
 
-async def add_search_results(user_id, search_results):
-    sql = f"""INSERT INTO users_search (user_id, search)
-            VALUES ({user_id}, {search_results});"""
-    async with aiosqlite.connect("users_search.db") as db:
-        cursor =  await db.execute(sql)
-        await db.commit()
-        rows = await cursor.fetchall()
-        print(rows)
+#async def add_search_results(user_id, search_results):
+ #   sql = f"""INSERT INTO users_search (user_id, search)
+   #         VALUES ({user_id}, {search_results});"""
+   # async with aiosqlite.connect("users_search.db") as db:
+       # cursor =  await db.execute(sql)
+       # await db.commit()
+        #rows = await cursor.fetchall()
+        #print(rows)
 # return connection
-async def count_search_results(user_id):
-    sql = f"""SELECT * FROM users_search WHERE user_id = {user_id}""" 
+#async def count_search_results(user_id):
+    #sql = f"""SELECT * FROM users_search WHERE user_id = {user_id}""" 
 
 
 
-user_db = AsyncDataBase("users_search")
-async def test_func():
-    task = asyncio.create_task(add_search_results(123123, "123"))
-    task1 = asyncio.create_task(count_search_results(123123))
-    await task
-    await task1
+# user_db = AsyncDataBase("users_search")
+#async def test_func():
+    #task = asyncio.create_task(add_search_results(123123, "123"))
+    ##task1 = asyncio.create_task(count_search_results(123123))
+    #await task
+    # await task1
 
 
 #loop = asyncio.get_event_loop()
