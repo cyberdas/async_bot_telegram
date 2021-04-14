@@ -22,6 +22,7 @@ dp = Dispatcher(bot, storage=storage)
 search_history = deque(maxlen=3)
 
 
+
 @dp.message_handler(CommandStart())
 async def message_start(message: types.Message):
     user = message.from_user.full_name
@@ -42,11 +43,6 @@ async def message_help(message: types.Message):
         "Версия бота /version \n"
     )
 
-@dp.message_handler(commands=["settings"])
-async def message_settings(message: types.Message):
-    pass
-    # параметры для поиска?
-    # регион + 
 
 @dp.message_handler(commands=["version"])
 async def cmd_version(message: types.Message):

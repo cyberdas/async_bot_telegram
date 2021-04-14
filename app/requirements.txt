@@ -7,3 +7,4 @@ aiosqlite==0.17.0
 pyrogram==1.2.8
 tgcrypto==1.2.2
 aiofile==3.5.0
+sqlalchemy==1.4.7

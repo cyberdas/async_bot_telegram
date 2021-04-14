@@ -1,10 +1,12 @@
 from aiogram import executor
 from bot import dp
+from chat_settings import dp
 from middlewares import ThrottlingMiddleware
 
 
 async def on_startup(dp):
     dp.middleware.setup(ThrottlingMiddleware())
+    #db.setUp(dp)
     
 
 if __name__ == '__main__':
