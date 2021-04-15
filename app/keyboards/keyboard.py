@@ -13,50 +13,31 @@ async def get_keyboard(search_history):
     return search_history_keyboard.add("/cancel")
 
 
-settings_menu = CallbackData("user", "property", "value")
-region_menu = CallbackData("user", "region")
-
-def get_markup():
-    return(
-        InlineKeyboardMarkup(row_width=1,
-            inline_keyboard=[
-                [
-                    InlineKeyboardButton(text="Изменить вакансию", callback_data=settings_menu.new(
-                        property="vacancy", value="change"
-                    )),
-                    InlineKeyboardButton(text="Изменить регион", callback_data=settings_menu.new(
-                        property="region", value="change"
-                    )),
-                    InlineKeyboardButton(text="Изменить тип занятости", callback_data=settings_menu.new(
-                        property="job_type", value="change"
-                    ))
-                ]
-            ]
-        )
-    )
+settings_menu = CallbackData("user", "property")
+region_menu = CallbackData("region_change", "region")
 
 
 choice = InlineKeyboardMarkup(row_width=1)
-change_vacancy = InlineKeyboardButton(text="Изменить вакансию", callback_data=settings_menu.new(
-                        property="vacancy", value="change"))
+change_vacancy = InlineKeyboardButton(
+    text="Изменить вакансию", callback_data=settings_menu.new(
+        property="vacancy"))
 choice.insert(change_vacancy)
 change_region = InlineKeyboardButton(
     text="Изменить регион", callback_data=settings_menu.new(
-        property="region", value="change"))
+        property="region"))
 choice.insert(change_region)
 change_job_type = InlineKeyboardButton(
     text="Изменить тип занятости", callback_data=settings_menu.new(
-        property="job_type", value="change"))
+        property="job_type"))
 choice.insert(change_job_type)
 
 
-region_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        InlineKeyboardButton(text="Москва", callback_data=region_menu.new(
-            region="Moscow"
-        )),
-        InlineKeyboardButton(text="Россия", callback_data=region_menu.new(
-            region="Russia"
-        ))
-        ]
-    )
+region_keyboard = InlineKeyboardMarkup()
+change_moscow = InlineKeyboardButton(
+    text="Москва", callback_data=settings_menu.new(
+        property="region_change"))
+region_keyboard.insert(change_moscow)
+change_russia = InlineKeyboardButton(
+    text="Россия", callback_data=settings_menu.new(
+        property="region_change"))
+region_keyboard.insert(change_russia)
