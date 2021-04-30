@@ -6,7 +6,7 @@ from middlewares import ThrottlingMiddleware
 
 async def on_startup(dp):
     dp.middleware.setup(ThrottlingMiddleware())
-    #db.setUp(dp) create database
+    # await create_db()
     
 
 if __name__ == '__main__':

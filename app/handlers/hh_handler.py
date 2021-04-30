@@ -22,3 +22,7 @@ async def search_hh(search_for):
                 return search_results_string
     else:
         return await cache.get(search_for)
+
+
+async def search_hh_extended(vacancy, region, type):
+    pass

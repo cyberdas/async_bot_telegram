@@ -28,12 +28,13 @@ class MessagesSearch:
                 await afp.write(item)
                 await afp.write("\n----------------------------\n")
 
-    async def main(self):
+    async def run(self):
         async with self.app:
             tasks = [self.get_chat_messages(chat) for chat in self.chats]
             await asyncio.gather(*tasks)
             await self.write_to_file(self.search_results)
 
 
-app = Client("my_account", api_id, api_hash)
-messages = MessagesSearch()
+if __name__ == "__main__":
+    app = Client("my_account", api_id, api_hash)
+    messages = MessagesSearch()

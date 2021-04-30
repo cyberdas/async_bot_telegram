@@ -12,7 +12,7 @@ from collections import deque
 from config import BOT_TOKEN
 from databases import cache, cache_time
 from states import HeadSearch
-from handlers import search_hh, app, messages
+from handlers import search_hh, MessagesSearch
 from keyboards import get_keyboard
 
 
@@ -20,7 +20,8 @@ bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 search_history = deque(maxlen=3)
-
+available_regions = ["Москва", "Россия"]
+available_job_types = ["Удаленная работа", "Полный день"]
 
 
 @dp.message_handler(CommandStart())
@@ -60,32 +61,66 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(commands=["hh_search"], state=None)
-async def hh_search(message: types.Message):
+async def hh_search_start(message: types.Message):
     keyboard = await get_keyboard(search_history)
-    await HeadSearch.waiting_for_vacancy.set()
     await message.answer(
         "Введите название вакансии или выберите из истории поиска",
         reply_markup=keyboard
     )
+    await HeadSearch.waiting_for_vacancy.set()
 
 
 @dp.message_handler(state=HeadSearch.waiting_for_vacancy)
-async def new_hh_search(message: types.Message, state:FSMContext):
+async def hh_vacancy_set(message: types.Message, state:FSMContext):
     search_for = message.text
-    search_results = await search_hh(search_for)
+    # search_results = await search_hh(search_for)
     search_history.append(search_for)
-    keyboard = await get_keyboard(search_history)
-    await message.answer(search_results)
+    # keyboard = await get_keyboard(search_history)
+    # await message.answer(search_results)
+    #await message.answer(
+       # "Выберите вакансию из истории из введите новую \n"
+       # "Или отмените его через /cancel",
+       # reply_markup=keyboard
+    #)
+    await state.update_data(chosen_vacancy=message.text)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    for region in available_regions:
+        keyboard.add(region)
+    keyboard.add("/cancel")
+    await HeadSearch.next()
     await message.answer(
-        "Вы можете продолжить поиск по другой вакансии \n"
-        "Или отменить его через /cancel",
-        reply_markup=keyboard
+        "Выберите регион поиска, используя клавиатуру", reply_markup=keyboard
     )
+
+
+@dp.message_handler(state=HeadSearch.waiting_for_region)
+async def hh_region_set(message: types.Message, state: FSMContext):
+    await state.update_data(chosen_region=message.text)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    for job_type in available_job_types:
+        keyboard.add(job_type)
+    keyboard.add("/cancel")
+    await HeadSearch.next()
+    await message.answer(
+        "Выберите тип занятости", reply_markup=keyboard
+    )
+
+@dp.message_handler(state=HeadSearch.waiting_for_job_type)
+async def hh_job_type_set(message: types.Message, state: FSMContext):
+    await state.update_data(chosen_type=message.text)
+    user_data = await state.get_data()
+    # await message.answer(search_results)
+    await message.answer(f"Вы искали вакансию {user_data['chosen_vacancy']}\n"
+                         f"В регионе {user_data['chosen_region']}\n"
+                         f"С типом занятости {user_data['chosen_type']}", reply_markup=types.ReplyKeyboardRemove())
+    await state.finish()
+
 
 @dp.message_handler(commands=["tg_search"], state=None)
 async def tg_search(message: types.Message):
+    messages = MessagesSearch()
     loop = asyncio.get_running_loop()
-    await loop.create_task(messages.main())
+    await loop.create_task(messages.run())
     document = types.InputFile("вакансии.txt")
     await message.answer_document(document)
     await message.answer(
