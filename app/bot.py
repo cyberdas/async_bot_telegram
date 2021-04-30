@@ -12,7 +12,7 @@ from collections import deque
 from config import BOT_TOKEN
 from databases import cache, cache_time
 from states import HeadSearch
-from handlers import search_hh, MessagesSearch
+from handlers import search_hh, MessagesSearch, search_hh_extended
 from keyboards import get_keyboard
 
 
@@ -73,15 +73,7 @@ async def hh_search_start(message: types.Message):
 @dp.message_handler(state=HeadSearch.waiting_for_vacancy)
 async def hh_vacancy_set(message: types.Message, state:FSMContext):
     search_for = message.text
-    # search_results = await search_hh(search_for)
     search_history.append(search_for)
-    # keyboard = await get_keyboard(search_history)
-    # await message.answer(search_results)
-    #await message.answer(
-       # "Выберите вакансию из истории из введите новую \n"
-       # "Или отмените его через /cancel",
-       # reply_markup=keyboard
-    #)
     await state.update_data(chosen_vacancy=message.text)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     for region in available_regions:
@@ -109,6 +101,7 @@ async def hh_region_set(message: types.Message, state: FSMContext):
 async def hh_job_type_set(message: types.Message, state: FSMContext):
     await state.update_data(chosen_type=message.text)
     user_data = await state.get_data()
+    search_results = await search_hh_extended(user_data)
     # await message.answer(search_results)
     await message.answer(f"Вы искали вакансию {user_data['chosen_vacancy']}\n"
                          f"В регионе {user_data['chosen_region']}\n"
