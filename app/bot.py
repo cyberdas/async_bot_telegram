@@ -87,6 +87,9 @@ async def hh_vacancy_set(message: types.Message, state:FSMContext):
 
 @dp.message_handler(state=HeadSearch.waiting_for_region)
 async def hh_region_set(message: types.Message, state: FSMContext):
+    if message.text not in available_regions:
+        await message.answer("Используйте клавиатуру")
+        return
     await state.update_data(chosen_region=message.text)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     for job_type in available_job_types:
@@ -94,15 +97,19 @@ async def hh_region_set(message: types.Message, state: FSMContext):
     keyboard.add("/cancel")
     await HeadSearch.next()
     await message.answer(
-        "Выберите тип занятости", reply_markup=keyboard
+        "Выберите тип занятости, используя клавиатуру", reply_markup=keyboard
     )
+
 
 @dp.message_handler(state=HeadSearch.waiting_for_job_type)
 async def hh_job_type_set(message: types.Message, state: FSMContext):
+    if message.text not in available_job_types:
+        await message.answer("Используйте клавиатуру")
+        return
     await state.update_data(chosen_type=message.text)
     user_data = await state.get_data()
     search_results = await search_hh_extended(user_data)
-    # await message.answer(search_results)
+    await message.answer(search_results)
     await message.answer(f"Вы искали вакансию {user_data['chosen_vacancy']}\n"
                          f"В регионе {user_data['chosen_region']}\n"
                          f"С типом занятости {user_data['chosen_type']}", reply_markup=types.ReplyKeyboardRemove())

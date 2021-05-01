@@ -7,9 +7,10 @@
 - Middlware
 ## Использованные библиотеки
 - asyncio
+- aiohttp
 - aiogram
 - aiocache
-- aiosqlite
+- asyncpg
 - sqlalchemy
 ## Развернуть проект с помощью Docker
 1) Клонируйте репозиторий 
