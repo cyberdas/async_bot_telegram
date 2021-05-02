@@ -17,6 +17,7 @@ class UsersModel(BaseModel):
         "clients",
         BaseModel.metadata,
         Column("id", Integer, autoincrement=True, primary_key=True),
+        Column("telegram_id", Integer, unique=True),
         Column("vacancy", String(100)),
         Column("region", String(100)),
         Column("job_type", String()),

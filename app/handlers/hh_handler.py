@@ -20,7 +20,11 @@ async def search_hh_extended(user_data):
     key_string = vacancy + region + job_type
     if not await cache.get(key_string):
         async with aiohttp.ClientSession() as session:
-            params = {"text": vacancy, "schedule": request_params.get(job_type), "area": request_params.get(region)}
+            params = {
+                "text": vacancy, 
+                "schedule": request_params.get(job_type), 
+                "area": request_params.get(region)
+                }
             async with session.get(URL, params=params) as resp:
                 data = await resp.json()
                 vacancies = data["items"]

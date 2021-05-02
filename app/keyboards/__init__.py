@@ -1,1 +1,2 @@
-from .keyboard import get_keyboard, choice, settings_menu, region_keyboard, region_menu
+from .keyboard import get_keyboard
+from .settings_keyboards import choice, settings_menu, region_keyboard, region_menu

@@ -39,3 +39,8 @@ async def user_choice_region(call: types.CallbackQuery, callback_data: dict):
 @dp.callback_query_handler(settings_menu.filter(property="job_type"))
 async def message_settings(call: types.CallbackQuery):
     await message.answer("Тест")
+
+
+@dp.callback_query_handler(settings_menu.filter(property=""))
+async def change_job_type(call: types.CallbackQuery, callback_data: dict):
+    print("Jpb type change")

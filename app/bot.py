@@ -12,7 +12,7 @@ from collections import deque
 from config import BOT_TOKEN
 from databases import cache, cache_time
 from states import HeadSearch
-from handlers import search_hh, MessagesSearch, search_hh_extended
+from handlers import MessagesSearch, search_hh_extended
 from keyboards import get_keyboard
 
 
